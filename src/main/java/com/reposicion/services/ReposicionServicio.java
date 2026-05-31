@@ -36,7 +36,7 @@ public class ReposicionServicio {
 		return reposicionRepo.findByIdProveedor(idProveedor);
 	}
 
-	public List<Reposicion> listarPorEstado(String estado) {
+	public List<Reposicion> listarPorEstado(Boolean estado) {
 		return reposicionRepo.findByEstado(estado);
 	}
 
@@ -54,7 +54,7 @@ public class ReposicionServicio {
 		nuevo.setIdProveedor(producto.getIdProveedor());
 		nuevo.setNombreProveedor(producto.getNombreProveedor());
 		nuevo.setFechaIngreso(LocalDate.now());
-		nuevo.setEstado("PENDIENTE");
+		nuevo.setEstado(true);
 		return reposicionRepo.save(nuevo);
 	}
 

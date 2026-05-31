@@ -52,7 +52,7 @@ public class ReposicionController {
     }
  
     @GetMapping("/estado/{estado}")
-    public ResponseEntity<List<Reposicion>> listarPorEstado(@PathVariable String estado) {
+    public ResponseEntity<List<Reposicion>> listarPorEstado(@PathVariable Boolean estado) {
         List<Reposicion> lista = reposicionServicio.listarPorEstado(estado);
         if (lista.isEmpty()) return ResponseEntity.noContent().build();
         return ResponseEntity.ok(lista);

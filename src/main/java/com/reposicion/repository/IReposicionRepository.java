@@ -12,6 +12,6 @@ public interface IReposicionRepository extends JpaRepository<Reposicion, Integer
 	List<Reposicion> findByIdProducto(Integer idProducto);
     List<Reposicion> findByIdProveedor(Integer idProveedor);
     
-    List<Reposicion> findByEstado(String estado);
+    List<Reposicion> findByEstado(Boolean estado);
     
 }

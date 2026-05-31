@@ -1,7 +1,6 @@
 package com.reposicion.model;
 import java.time.LocalDate;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,9 +29,7 @@ public class Reposicion {
 
 	private Double precioProducto;
 
-	// PENDIENTE - EN_PROCESO - RECIBIDO - CANCELADO
-	@Column(nullable = false)
-	private String estado = "PENDIENTE";
+	private Boolean estado = true;
 
 	private Integer idProveedor;
 	private String nombreProveedor;
