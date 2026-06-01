@@ -1,13 +1,16 @@
 package com.reposicion.services;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.reposicion.dto.ProductoDto;
+import com.reposicion.dto.ProveedorDto;
+import com.reposicion.dto.UsuarioDto;
 import com.reposicion.feign.ClienteProductoFeign;
+import com.reposicion.feign.ClienteProveedorFeign;
+import com.reposicion.feign.ClienteUsuarioFeign;
 import com.reposicion.model.Reposicion;
 import com.reposicion.repository.IReposicionRepository;
 
@@ -19,21 +22,30 @@ public class ReposicionServicio {
 
 	@Autowired
 	private ClienteProductoFeign clienteProducto;
+	@Autowired
+	private ClienteProveedorFeign clienteProveedor;
+	@Autowired
+	private ClienteUsuarioFeign clienteUsuario;
 
 	public List<Reposicion> listarReposiciones() {
 		return reposicionRepo.findAll();
 	}
 
-	public Reposicion obtenerPReposicionPorId(Integer id) {
-		return reposicionRepo.findById(id).orElse(null);
+	public Reposicion obtenerReposicionPorId(Integer id) {
+		return reposicionRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reposición no encontrada con Id: " + id));
 	}
 
-	public List<Reposicion> listarPoProductoId(Integer idProducto) {
+	public List<Reposicion> listarPorProductoId(Integer idProducto) {
 		return reposicionRepo.findByIdProducto(idProducto);
 	}
 
-	public List<Reposicion> listarPoProveedorId(Integer idProveedor) {
+	public List<Reposicion> listarPorProveedorId(Integer idProveedor) {
 		return reposicionRepo.findByIdProveedor(idProveedor);
+	}
+	
+	public List<Reposicion> listarPorUsuarioId(Integer idUsuario) {
+		return reposicionRepo.findByIdUsuario(idUsuario);
 	}
 
 	public List<Reposicion> listarPorEstado(Boolean estado) {
@@ -41,21 +53,58 @@ public class ReposicionServicio {
 	}
 
 	public Reposicion agregarReposicion(Reposicion nuevo) {
-		ProductoDto producto = new ProductoDto();
+		ProductoDto producto;
+		ProveedorDto proveedor;
+		UsuarioDto usuario;
+		
 		try {
 			producto = clienteProducto.obtenerProductoPorId(nuevo.getIdProducto());
+			nuevo.setPrecioProducto(producto.getPrecioUnit());
 
 		} catch (Exception e) {
 			throw new RuntimeException("Producto no encontrado con el Id: " + nuevo.getIdProducto());
-
 		}
-		nuevo.setNombreProducto(producto.getNombre());
-		nuevo.setCategoria(producto.getCategoria());
-		nuevo.setIdProveedor(producto.getIdProveedor());
-		nuevo.setNombreProveedor(producto.getNombreProveedor());
-		nuevo.setFechaIngreso(LocalDate.now());
-		nuevo.setEstado(true);
+		
+		try {
+			proveedor = clienteProveedor.obtenerProveedorPorId(nuevo.getIdProveedor());
+
+		} catch (Exception e) {
+			throw new RuntimeException("Proveedor no encontrado con el Id: " + nuevo.getIdProveedor());
+		}
+		
+		try {
+			usuario = clienteUsuario.obtenerUsuarioPorId(nuevo.getIdUsuario());
+
+		} catch (Exception e) {
+			throw new RuntimeException("Usuario no encontrado con el Id: " + nuevo.getIdUsuario());
+		}
+		
+        nuevo.setEstado(true);
+		
 		return reposicionRepo.save(nuevo);
 	}
+	
+	
+	public Reposicion actualizarReposicion(Integer id, Reposicion repo) {
+        Reposicion reposicion = reposicionRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reposición no encontrada con Id: " + id));
+ 
+        if (!reposicion.getEstado()) {
+            throw new RuntimeException("No se puede modificar una reposición cancelada");
+        }
+ 
+        reposicion.setCantRepo(repo.getCantRepo());
+        reposicion.setPrecioProducto(repo.getPrecioProducto());
+        reposicion.setFechaRepo(repo.getFechaRepo());
+        return reposicionRepo.save(reposicion);
+    }
+	
+	
+	public Reposicion cancelarReposicion(Integer id) {
+		Reposicion reposicion = reposicionRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reposición no encontrada con Id: " + id));
+        reposicion.setEstado(false);
+        return reposicionRepo.save(reposicion);
+    }
 
 }

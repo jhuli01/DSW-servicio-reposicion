@@ -18,20 +18,14 @@ public class Reposicion {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer idReposicion;
-	private LocalDate fechaIngreso;
-
 	private Integer idProducto;
-	private String nombreProducto;
-
-	private String categoria;
-
-	private Integer cantidad;
-
+	private Integer idProveedor;
+	private Integer idUsuario;
+	private Integer cantRepo;
+	private LocalDate fechaRepo;
 	private Double precioProducto;
 
 	private Boolean estado = true;
 
-	private Integer idProveedor;
-	private String nombreProveedor;
 
 }
