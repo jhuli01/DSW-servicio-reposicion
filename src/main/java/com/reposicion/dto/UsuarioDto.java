@@ -8,7 +8,7 @@ public class UsuarioDto {
 	private String userName;
     private String nomUsuario;
     private String apeUsuario;
-    private String bni;
+    private String dni;
     private Boolean estado;
     private Integer idRol;
 }
